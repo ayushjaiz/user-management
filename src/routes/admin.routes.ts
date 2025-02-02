@@ -1,14 +1,16 @@
 import express from "express";
-import { updateProfile } from "../controllers/user.controller";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
 import { Role } from "../models/user.model";
+import { updateRole } from "../controllers/admin.controller";
 
 const router = express.Router();
 
-router.put("/user/:id",
+router.patch(
+    "user/:id/role",
     authenticate,
-    updateProfile
+    authorize([Role.ADMIN]),
+    updateRole
 );
 
 export default router;
