@@ -95,6 +95,10 @@
 
 ## Deployment
 
+This project is deployed on render : https://user-management-slqy.onrender.com
+
+First response can take upto a minute
+
 
 ---
 
