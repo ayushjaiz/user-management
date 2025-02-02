@@ -1,6 +1,6 @@
 # RESTAURANT MENU
 
-## This project focuses on managing the menu of a restaurant. The app uses Nodejs.js fpr server side developemnt written in typescript. This uses uses MongoDB as databse.
+#### This project focuses on comprehensive User Management System coupled with an Admin Panel that provides core functionalities for user registration, profile management, and communication via notifications.
 
 ## Table of Contents
 
@@ -20,7 +20,6 @@
 ## Project Features
 
 - **Authentication**: Implement secure user authentication using JWT
-- **Managing Menu**: User can add category, subcategory and item to their menu. Morever, it also supports edit and delete functionalities.
 
 ---
 
@@ -58,8 +57,8 @@
 
 1. **Clone the Repository**:
    ```bash
-   git clone hhttps://github.com/ayushjaiz/menu-backend
-   cd menu-backend
+   git clone https://github.com/ayushjaiz/user-management
+   cd user-management
    ```
 2. **Install dependencies:**
    ```bash
@@ -96,7 +95,6 @@
 
 ## Deployment
 
-This app is deployed on render: https://menu-backend-71n6.onrender.com
 
 ---
 
@@ -128,12 +126,3 @@ I have chosen MongoDB because:
 
 - Designing the good schema and validations
 
-
-### What would you have done differently given more time?
-
-- Add pagination and filtering for better performance with large datasets.
-- Set up a caching mechanism (Redis) to improve API response times.
-
-## Video explanation
-
-https://www.loom.com/share/852ccb9306934720a24f18bef1e5ad9a?sid=23796a51-4705-4da9-ba51-c86612a9fe52
