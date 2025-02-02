@@ -99,7 +99,6 @@ This project is deployed on render : https://user-management-slqy.onrender.com
 
 First response can take upto a minute
 
-
 ---
 
 ## Acknowledgements
@@ -108,7 +107,6 @@ This project was completed with the assistance of various online resources. I ut
 
 - Google + Stack Overflow - for bugs and documentation of libraries
 - MongoDb docs
-
 
 ## Answers for the Assignment
 
@@ -125,8 +123,6 @@ I have chosen MongoDB because:
 - Schema designing which can scale.
 - Code modularity. This repo features code division into routes, controllers and database layer.
 
-
 ### What was the most difficult part of the assignment?
 
 - Designing the good schema and validations
-

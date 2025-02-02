@@ -25,7 +25,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
 export const updateRole = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req?.user?.id;
         const { role } = req.body; // Expected "user" or "admin"
 
         if (!Object.values(Role).includes(role)) {

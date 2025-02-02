@@ -1,6 +1,5 @@
 import express from "express";
 import authRoutes from "./routes/auth.route"
-import subcategoryRoutes from "./routes/subcategory.route"
 import cookieParser from 'cookie-parser'
 
 const app = express();
