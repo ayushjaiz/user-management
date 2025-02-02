@@ -1,4 +1,4 @@
-# RESTAURANT MENU
+# USER MANAGEMENT
 
 #### This project focuses on comprehensive User Management System coupled with an Admin Panel that provides core functionalities for user registration, profile management, and communication via notifications.
 
