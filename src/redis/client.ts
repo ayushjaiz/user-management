@@ -1,8 +1,8 @@
 // import { createClient } from 'redis';
-// import { config } from '../config/env';
+// import { envConfig } from '../config/env';
 
 // const redisClient = createClient({
-//     url: config.redisUrl
+//     url: envConfig.redisUrl
 // });
 
 // redisClient.on('error', (err) => {
