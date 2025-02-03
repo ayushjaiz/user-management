@@ -1,22 +1,12 @@
-import nodemailer from 'nodemailer';
+import transporter from './mail/transporter';
 
-interface emailPayload {
+export interface emailPayload {
     email_id: string;
     subject: string;
     body: string;
 }
 
 async function sendEmail({ email_id, subject, body }: emailPayload): Promise<void> {
-    // 1. create an email transporter.
-    // SMTP (Simple Mail Transfer Protocol)
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_ADMIN,
-            pass: process.env.EMAIL_PASSWORD
-        }
-    })
-
     // 2. Configure email content.
     const mailOptions = {
         from: process.env.EMAIL_ADMIN,

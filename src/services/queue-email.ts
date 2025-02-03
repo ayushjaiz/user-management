@@ -1,10 +1,20 @@
 // import { Queue, Worker, QueueScheduler } from 'bullmq';
-// import { sendEmail } from "../services/send-email";
+// import { sendEmail } from "../utils/email";
 // import { Redis } from 'ioredis';
-// import redisClient from '../redis/client';
+
+// // Connect to Redis server
+// const redis = new Redis({
+//     host: "localhost", // Redis server address
+//     port: 6379,        // Redis port
+// });
 
 // // Create a BullMQ queue for notification tasks
-// const notificationQueue = new Queue('notificationQueue', redisClient);
+// const notificationQueue = new Queue('notificationQueue', {
+//     redis: {
+//         host: 'localhost',
+//         port: 6379,
+//     }
+// });
 
 // // Scheduler for jobs that may not be executed right away
 // const scheduler = new QueueScheduler('notificationQueue', {

@@ -20,13 +20,15 @@
 ## Project Features
 
 - **Authentication**: Implement secure user authentication using JWT
+- **Send Notification**: Send the notification to multiple users as per their availability
+- **Email-queuing**: Queue the email and sends it when the user is avaliable
 
 ---
 
 ## Tech Stack
 
 - **Backend**: NodeJs, Express, Typescript
-- **Database**: MongDB
+- **Database**: MongDB, Redis
 
 ---
 
@@ -38,6 +40,8 @@
 - **typescript**: Used to write TypeScript code.
 - **ts-node**: Execute typescript code.
 - **jsonwebtoken**: Implement authentication and role based access control
+- **nodemailer**: Sending Email via Gmail SMTP
+- **bullmq**: Queue the email jobs
 
 ---
 
@@ -47,6 +51,7 @@
 
 - NodeJS
 - MongoDB
+- Redis
 
 ### Environment Variables
 
@@ -72,6 +77,32 @@
 
 ---
 
+## Routes
+
+### Public Routes
+
+| Route          | Method | Description                               |
+| -------------- | ------ | ----------------------------------------- |
+| /auth/login    | POST   | Authenticates user and returns JWT token. |
+| /auth/register | POST   | Registers a new user.                     |
+| /auth/logout   | POST   | Logs out the current user.                |
+
+### Protected Routes
+
+- Admin Routes
+
+| Route                      | Method | Description                                 |
+| -------------------------- | ------ | ------------------------------------------- |
+| /admin/users/:user-id/role | PATCH  | Update user role                            |
+| /admin/notifications/send  | POST   | Send notification (criticical/non-critical) |
+
+- User Routes
+
+| Route                     | Method | Description         |
+| ------------------------- | ------ | ------------------- |
+| /users/:id                | PUT    | Update user profile |
+| /users/notifications/send | POST   | Send notification   |
+
 ## Development Choices
 
 ### Why Node.js?
@@ -90,6 +121,10 @@
 
 - Flexibility to accomodate changes in schema
 - Easy documentation
+
+### Why Redis?
+
+- BullMq uses Redis for creating job queue
 
 ---
 

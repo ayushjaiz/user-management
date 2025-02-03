@@ -2,7 +2,7 @@ import express from "express";
 import { authenticate } from "../middlewares/authenticate";
 import { authorize } from "../middlewares/authorize";
 import { Role } from "../models/user.model";
-import { updateRole } from "../controllers/admin.controller";
+import { sendNotification, updateRole } from "../controllers/admin.controller";
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.post(
     "notifications/send",
     authenticate,
     authorize([Role.ADMIN]),
-    updateRole
+    sendNotification,
 );
 
 export default router;

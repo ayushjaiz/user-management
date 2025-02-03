@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Role, UserModel } from "../models/user.model";
 import { sendEmail } from "../services/send-email";
+import { addEmailToQueue } from "../services/queue/queue";
 
 export const updateRole = async (req: Request, res: Response) => {
     try {
@@ -34,7 +35,8 @@ export const sendNotification = async (req: Request, res: Response) => {
         const { recipients, message, is_critical } = req.body;
 
         if (!recipients || !message || !is_critical) {
-            return res.status(400).send({ error: "Missing required fields." });
+            res.status(400).send({ error: "Missing required fields." });
+            return;
         }
 
         // Fetch recipient availability & email
@@ -45,17 +47,19 @@ export const sendNotification = async (req: Request, res: Response) => {
 
         const currentTime = new Date().toISOString().slice(11, 16); // HH:mm format
 
-        const emailTasks = users.map((user) => {
+        const emailTasks = users.map(async (user) => {
+            const emailPayload = {
+                email_id: user.email,
+                subject: "New Notification",
+                body: `<p>${message}</p>`,
+            }
+
             const isAvailable = user.available_time.some(
                 (slot) => currentTime >= slot.start && currentTime <= slot.end
             );
 
             if (isAvailable || is_critical) {
-                return sendEmail({
-                    email_id: user.email,
-                    subject: "New Notification",
-                    body: `<p>${message}</p>`,
-                });
+                return sendEmail(emailPayload);
             } else {
                 // Find the nearest available time and schedule the email
                 const nearestTime = user.available_time
@@ -63,16 +67,21 @@ export const sendNotification = async (req: Request, res: Response) => {
                     .sort()
                     .find((time) => time > currentTime);
 
-                // if (nearestTime) {
-                //     const [hours, minutes] = nearestTime.split(":").map(Number);
-                //     cron.schedule(`${minutes} ${hours} * * *`, () => {
-                //         sendEmail({
-                //             email_id: user.email,
-                //             subject: "New Notification",
-                //             body: `<p>${message}</p>`,
-                //         });
-                //     });
-                // }
+                if (nearestTime) {
+                    const [hours, minutes] = nearestTime.split(":").map(Number);
+
+                    // Calculate delay in milliseconds until the nearest available time
+                    const delay =
+                        (hours * 60 + minutes - parseInt(currentTime.slice(0, 2)) * 60 - parseInt(currentTime.slice(3, 5))) * 60000;
+
+                    // Add job to the queue for scheduling at the nearest available time
+                    const jobPayload = {
+                        delay,
+                        email_details: emailPayload
+                    }
+
+                    await addEmailToQueue(jobPayload);
+                }
             }
         });
 
