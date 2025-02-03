@@ -7,14 +7,14 @@ import { sendNotification, updateRole } from "../controllers/admin.controller";
 const router = express.Router();
 
 router.patch(
-    "/users/:user-id/role",
+    "/users/:user_id/role",
     authenticate,
     authorize([Role.ADMIN]),
     updateRole
 );
 
 router.post(
-    "notifications/send",
+    "/notifications/send",
     authenticate,
     authorize([Role.ADMIN]),
     sendNotification,

@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/user.model";
 import { addEmailToQueue } from "../services/queue/queue";
-import { sendEmail } from "../services/send-email";
+import { getDelay, getISTtime, isTimeWithinRange } from "../utils/time";
 
 export const updateProfile = async (req: Request, res: Response) => {
     try {
         const id = req?.user?.id;
 
-        const updatedUser = await UserModel.findByIdAndUpdate((id), req);
+        const updatedUser = await UserModel.findByIdAndUpdate((id), req.body, { new: true });
 
         if (!updatedUser) {
             res.status(404).send({ status: false, message: "User not found" });
@@ -26,64 +26,61 @@ export const updateProfile = async (req: Request, res: Response) => {
 
 export const sendNotification = async (req: Request, res: Response) => {
     try {
-        const { recipients, message } = req.body;
+        const { recipients, message} = req.body;
 
-        if (!recipients || !message) {
-            res.status(400).send({ error: "Missing required fields." });
+        // Ensure required fields exist and are valid
+        if (!recipients?.length || !message) {
+            res.status(400).json({ error: "Missing or invalid required fields." });
+            return
+        }
+
+        // Fetch recipients' email
+        const users = await UserModel.find(
+            { _id: { $in: recipients } },
+            { email: 1, availability_time: 1 }
+        );
+
+        if (!users.length) {
+            res.status(404).json({ error: "No valid recipients found." });
             return;
         }
 
-        // Fetch recipient availability & email
-        const users = await UserModel.find(
-            { _id: { $in: recipients } },
-            { email: 1, available_time: 1 }
-        );
-
-        const currentTime = new Date().toISOString().slice(11, 16); // HH:mm format
+        const currentTime = getISTtime().toISOString().slice(11, 16); // HH:mm format
 
         const emailTasks = users.map(async (user) => {
+            if (!user.availability_time?.length || !user.email) return;
+
             const emailPayload = {
                 email_id: user.email,
                 subject: "New Notification",
                 body: `<p>${message}</p>`,
-            }
+            };
 
-            const isAvailable = user.available_time.some(
-                (slot) => currentTime >= slot.start && currentTime <= slot.end
+            // Check if the user is available now
+            const isAvailable = user.availability_time.some(
+                (slot) => isTimeWithinRange(currentTime, slot.start, slot.end)
             );
 
             if (isAvailable) {
-                return sendEmail(emailPayload);
-            } else {
-                // Find the nearest available time and schedule the email
-                const nearestTime = user.available_time
-                    .map((slot) => slot.start)
-                    .sort()
-                    .find((time) => time > currentTime);
+                return addEmailToQueue({ delay: 0, email_details: emailPayload });
+            }
 
-                if (nearestTime) {
-                    const [hours, minutes] = nearestTime.split(":").map(Number);
+            // Find the nearest future available time
+            const nearestTime = user.availability_time
+                .map(slot => slot.start)
+                .sort()
+                .find(time => time > currentTime);
 
-                    // Calculate delay in milliseconds until the nearest available time
-                    const delay =
-                        (hours * 60 + minutes - parseInt(currentTime.slice(0, 2)) * 60 - parseInt(currentTime.slice(3, 5))) * 60000;
-
-                    // Add job to the queue for scheduling at the nearest available time
-                    const jobPayload = {
-                        delay,
-                        email_details: emailPayload
-                    }
-
-                    await addEmailToQueue(jobPayload);
-                }
+            if (nearestTime) {
+                return addEmailToQueue({ delay: getDelay(nearestTime, currentTime), email_details: emailPayload });
             }
         });
 
         await Promise.all(emailTasks);
 
-        res.status(200).send({ success: true, message: "Notifications processed successfully." });
+        res.status(200).json({ success: true, message: "Notifications processed successfully." });
     } catch (error) {
         console.error("Error sending notification:", error);
-        res.status(500).send({ error: "Internal server error." });
+        res.status(500).json({ error: "Internal server error." });
     }
 };

@@ -6,7 +6,7 @@ import { Role } from "../models/user.model";
 
 const router = express.Router();
 
-router.put("/:id",
+router.put("/",
     authenticate,
     updateProfile
 );

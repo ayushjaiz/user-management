@@ -9,10 +9,10 @@ export interface IAvailableTimeSlot {
 export interface IUser {
     email: string;
     password: string;
-    role: string;
-    mobile_number: string;
+    role?: string;
+    mobile_number?: string;
     bio?: string;
-    available_time: IAvailableTimeSlot[];
+    availability_time?: IAvailableTimeSlot[];
 }
 
 export interface IUserDocument extends IUser, Document {
@@ -62,15 +62,14 @@ const UserSchema = new Schema<IUserDocument>(
         },
         mobile_number: {
             type: Schema.Types.String,
-            unique: true,
-            match: /^[0-9]{10}$/, // Ensures a 10-digit number
+            default: "",
         },
         bio: {
             type: Schema.Types.String,
             trim: true,
             default: "",
         },
-        available_time: {
+        availability_time: {
             type: [AvailableTimeSchema], // Array of time slots
             default: [],
         },
