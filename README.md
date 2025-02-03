@@ -150,7 +150,7 @@ This project was completed with the assistance of various online resources. I ut
 I have chosen MongoDB because:
 
 - It provides a flexible schema, which can accomodate changes according to later requirements.
-- It offers high scalability and fast read/write operations, which are useful for menu-based applications.
+- It offers high scalability and fast read/write operations.
 
 ### Three things that I learned from this assignment
 
